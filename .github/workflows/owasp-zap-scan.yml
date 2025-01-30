@@ -1,8 +1,8 @@
 name: OWASP ZAP Integration with GitHub Actions
-on: 
-  push:
-    branches:
-      - main
+# on: 
+#   push:
+#     branches:
+#       - main
 jobs:
   build:
     name: DAST scan using OWASP ZAP

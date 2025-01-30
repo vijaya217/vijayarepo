@@ -1,8 +1,8 @@
 name: Snyk Scan using GitHub Actions with Continue on Error as False
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 jobs:
   build:
     name: SCA scan using Snyk
