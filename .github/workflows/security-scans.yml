@@ -3,12 +3,11 @@ on:
   push:
     branches:
       - main
-
+ 
 jobs:
   sonar-scan:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
-    continue-on-error: true # Ensures next job runs even if this fails
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,26 +23,29 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=myneworgg -Dsonar.projectKey=myneworgg_mynewproject
 
+ 
   snyk-scan:
-    needs: [sonar-scan]
     name: Snyk Security Scan
+    needs: sonar-scan
+    if: always() # Ensures this job runs even if sonar-scan fails
     runs-on: ubuntu-latest
-    continue-on-error: true # Ensures next job runs even if this fails
     steps:
       - uses: actions/checkout@v4
       - name: Snyk Security Scan
         uses: snyk/actions/maven@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
+ 
   zap-scan:
-    needs: [snyk-scan]
     name: OWASP ZAP Scan
+    needs: snyk-scan
+    if: always() # Ensures this job runs even if snyk-scan fails
     runs-on: ubuntu-latest
-    continue-on-error: true # Ensures workflow completes even if this fails
     steps:
       - uses: actions/checkout@v4
       - name: OWASP ZAP Scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
           target: 'https://www.zaproxy.org'
+ 
